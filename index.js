@@ -73,11 +73,7 @@ imap.once('ready', () => {
                 }
               
               });
-                await Promise.race([
-                  page.waitForNavigation({ timeout: 5000 }),
-                  new Promise(resolve => setTimeout(resolve, 5000)) // Timeout after 5 seconds
-                ]);                
-                
+                page.waitForNavigation({ timeout: 5000 }),
                 await browser.close();
               } else {
                 console.log('No matching link found.');
@@ -99,5 +95,4 @@ imap.once('error', (err) => {
   console.error('IMAP error:', err);
 });
 
-keepAlive();
 imap.connect();
