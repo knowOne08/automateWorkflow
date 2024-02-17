@@ -2,6 +2,7 @@ const Imap = require('node-imap');
 const simpleParser = require('mailparser').simpleParser;
 const puppeteer = require('puppeteer');
 const dotenv = require('dotenv');
+const keepAlive = require('./server.js')
 dotenv.config();
 
 const imap = new Imap({
@@ -48,26 +49,35 @@ imap.once('ready', () => {
               await page.goto(link); //goto verification page
 
               await page.waitForSelector('button');
-
+              console.log("here")
               // Click the button with the text "Update Netflix Household"
               await page.evaluate(() => {
-                console.log("here");
-                console.log("here");
-                const buttons = document.querySelectorAll('button');
-                let buttonClicked = false;
+                try {
+                  console.log("here");
+                  const buttons = document.querySelectorAll('button');
+                  let buttonClicked = false;
               
-                buttons.forEach(button => {
-                  if (button.innerText.trim() === 'Update Netflix Household') {
-                    button.click();
-                    console.log("Button clicked");
-                    buttonClicked = true;
+                  buttons.forEach(button => {
+                    if (button.innerText.trim() === 'Update Netflix Household') {
+                      button.click();
+                      console.log("Button clicked");
+                      buttonClicked = true;
+                    }
+                  });
+              
+                  if (!buttonClicked) {
+                    console.log("Button not found or not clicked");
                   }
-                });
-              
-                if (!buttonClicked) {
-                  console.log("Button not found or not clicked");
+                } catch (error) {
+                  console.error('Error in page.evaluate:', error);
                 }
+              
               });
+                await Promise.race([
+                  page.waitForNavigation({ timeout: 5000 }),
+                  new Promise(resolve => setTimeout(resolve, 5000)) // Timeout after 5 seconds
+                ]);                
+                
                 await browser.close();
               } else {
                 console.log('No matching link found.');
@@ -89,4 +99,5 @@ imap.once('error', (err) => {
   console.error('IMAP error:', err);
 });
 
+keepAlive();
 imap.connect();
