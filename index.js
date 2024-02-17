@@ -2,7 +2,6 @@ const Imap = require('node-imap');
 const simpleParser = require('mailparser').simpleParser;
 const puppeteer = require('puppeteer');
 const dotenv = require('dotenv');
-const keepAlive = require('./server.js')
 dotenv.config();
 
 const imap = new Imap({
