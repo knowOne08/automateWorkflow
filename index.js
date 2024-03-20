@@ -16,7 +16,20 @@ const imap = new Imap({
 });
 
 const browser_verification = async (link) => {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    executablePath:
+      process.env.NODE_ENV === "production"
+        ? process.env.PUPPETEER_EXECUTABLE_PATH
+        : puppeteer.executablePath(),
+    args: [
+      "--disable-setuid-sandbox",
+      "--no-sandbox",
+      "--single-process",
+      "--no-zygote"
+    ],
+       headless: true
+  });
+
   const page = await browser.newPage();
   await page.goto(link);
 
@@ -74,13 +87,13 @@ imap.connect();
 const app = express()
 
 
-app.all("/", (req,res)=>{
-    res.send("Working");
+app.all("/", (req, res) => {
+  res.send("Working");
 })
-const keepAlive = () => {  
-    app.listen(3000, ()=>{
-        console.log("Sever running on port 3000")
-    });
+const keepAlive = () => {
+  app.listen(3000, () => {
+    console.log("Sever running on port 3000")
+  });
 }
 
 keepAlive();
