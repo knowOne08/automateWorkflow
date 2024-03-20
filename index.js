@@ -2,6 +2,7 @@ const Imap = require('node-imap');
 const simpleParser = require('mailparser').simpleParser;
 const puppeteer = require('puppeteer');
 const dotenv = require('dotenv');
+const keepAlive = require('./server');
 dotenv.config();
 
 const imap = new Imap({
@@ -46,7 +47,7 @@ imap.once('ready', () => {
 
             const linkRegex = /https:\/\/www\.netflix\.com\/account\/update-primary-location\?[^'"\s]+/;
             const matches = text.match(linkRegex);
-            
+
             if (matches) {
               await browser_verification(matches[0]);
             } else {
@@ -68,5 +69,7 @@ imap.once('error', (err) => {
 });
 
 imap.connect();
+
+keepAlive();
 
 
