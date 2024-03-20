@@ -2,7 +2,7 @@ const Imap = require('node-imap');
 const simpleParser = require('mailparser').simpleParser;
 const puppeteer = require('puppeteer');
 const dotenv = require('dotenv');
-const keepAlive = require('./server');
+const express = require('express');
 dotenv.config();
 
 const imap = new Imap({
@@ -69,6 +69,19 @@ imap.once('error', (err) => {
 });
 
 imap.connect();
+
+
+const app = express()
+
+
+app.all("/", (req,res)=>{
+    res.send("Working");
+})
+const keepAlive = () => {  
+    app.listen(3000, ()=>{
+        console.log("Sever running on port 3000")
+    });
+}
 
 keepAlive();
 
